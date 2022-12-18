@@ -12,11 +12,11 @@ router.post('/inscription', (request, response) => {
     bcrypt.hash(request.body.password, rounds, (error, hash) => {
         if(error) response.status(500).json(error)
         else {
-            const newUser = User({email: request.body.email, password: hash});
+            const newUser = User({...request.body, password: hash});
             newUser.save()
             .then(
                 user => {
-                    response.status(200).json({token: generateToken(user)})
+                    response.status(200).json({user: user, token: generateToken(user)})
                 }
             )
             .catch(
@@ -32,8 +32,23 @@ function generateToken(user) {
     return jwt.sign({data: user}, secretToken, {expiresIn: '24h'})
 }
 
-router.post("/login", async (request, response) => {
-    const log = await User.findOne()
+router.get("/login", (request, response) => {
+    User.findOne({email : request.body.email})
+    .then(user => {
+            if (!user) response.status(404).json({error: "Pas d'utilisateur avec cet email"})
+            else {
+                bcrypt.compare(request.body.password, user.password, (error, match) => {
+                    if (error) response.status(500).json(error)
+                    else if (match) response.status(200).json({user: user, token: generateToken(user)})
+                    else response.status(403).json({error: "Le mot de passe est incorrect"})
+                })
+            }
+        }
+    )
+    .catch(error => {
+        response.status(500).json(error)
+    })
+
 })
 
 export default router;

@@ -23,4 +23,18 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, default: 'user' },
 });
 
+const TrainSchema = new mongoose.Schema({
+    name: String,
+    start_station: String,
+    end_station: String,
+    time_of_departure: Date,
+});
+const TrainstationSchema = new mongoose.Schema({
+    name: String,
+    open_hour: Date,
+    close_hour: Date,
+});
+
 export const User = mongoose.model("User", UserSchema);
+export const Train = mongoose.model("Train", TrainSchema);
+export const Trainstation = mongoose.model("Trainstation", TrainstationSchema);
