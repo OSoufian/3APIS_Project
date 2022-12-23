@@ -1,7 +1,0 @@
-import sys
-
-def Sum(arg,arg2):
-    print(int(arg)-int(arg2))
-
-if __name__ == '__main__':
-    Sum(sys.argv[1],sys.argv[2])

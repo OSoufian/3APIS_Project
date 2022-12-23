@@ -54,6 +54,12 @@ const TrainstationSchema = new mongoose.Schema({
     },
 });
 
+TrainstationSchema.methods.toJSON = function() {
+    var obj = this.toObject();
+    delete obj.image.data;
+    return obj;
+}
+
 export const User = mongoose.model("User", UserSchema);
 export const Train = mongoose.model("Train", TrainSchema);
 export const Trainstation = mongoose.model("Trainstation", TrainstationSchema);

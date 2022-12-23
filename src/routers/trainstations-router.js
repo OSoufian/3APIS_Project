@@ -7,16 +7,12 @@ const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 
+const re = /(?:\.([^.]+))?$/;
+
 router.post("/", upload.single("image"), async (request, response) => {
-    // const newTrain = await Train.create(request.body);
-    // console.log(request.body);
-    // response.status(201).json(newTrain);
-
-    var re = /(?:\.([^.]+))?$/;
-
     var ext = re.exec(request.file.originalname)[1];
 
-    const newTrainstation =  Trainstation({
+    const newTrainstation = Trainstation({
         ...request.body,
         open_hour: { hours: request.body.open_hours, minutes: request.body.open_minutes },
         close_hour: { hours: request.body.close_hours, minutes: request.body.close_minutes },
@@ -29,40 +25,47 @@ router.post("/", upload.single("image"), async (request, response) => {
     newTrainstation.save();
     response.status(201).json(newTrainstation);
 });
-
-// router.post("/", async (request, response) => {
-//     const newTrainstation = await Trainstation.create(request.body);
-//     response.status(201).json(newTrainstation);
-// });
   
-// router.get("/", async (request, response) => {
-//     const trainstations = await Trainstation.find();
-//     response.status(200).json(trainstations);
-// });
+router.get("/", async (request, response) => {
+    const trainstations = await Trainstation.find();
+    response.status(200).json(trainstations);
+});
 
-// router.put("/:id", async (request, response) => {
-//     const id = request.params.id;
-//     const trainstation = await Trainstation.findByIdAndUpdate(id, request.body, { new: true });
+router.put("/:id", upload.single("image"), async (request, response) => {
+    const id = request.params.id;
+    var ext = re.exec(request.file.originalname)[1];
+    const trainstation = await Trainstation.findByIdAndUpdate(id,
+        {
+            name: request.body.name,
+            open_hour: { hours: request.body.open_hours, minutes: request.body.open_minutes },
+            close_hour: { hours: request.body.close_hours, minutes: request.body.close_minutes },
+            image: {
+                name: request.file.originalname,
+                ext: ext,
+                data: fs.readFileSync("uploads/" + request.file.filename),          
+            }
+        },         
+        { new: true });
   
-//     if (!trainstation) {
-//       response.status(404).json({ message: "Gare inexistante !" });
-//       return;
-//     }
+    if (!trainstation) {
+      response.status(404).json({ message: "Gare inexistante !" });
+      return;
+    }
   
-//     response.status(200).json(trainstation);
-// });
+    response.status(200).json(trainstation);
+});
   
-// router.delete("/:id", async (request, response) => {
-//     const id = request.params.id;
-//     const trainstation = await Trainstation.findByIdAndDelete(id);
+router.delete("/:id", async (request, response) => {
+    const id = request.params.id;
+    const trainstation = await Trainstation.findByIdAndDelete(id);
 
-//     if (!trainstation) {
-//         response.status(404).json({ message: "Gare inexistante !" });
-//         return;
-//     }
+    if (!trainstation) {
+        response.status(404).json({ message: "Gare inexistante !" });
+        return;
+    }
 
-//     console.log(request.params);
-//     response.status(200).json({ message: `La gare ${request.params.id} a bien été supprimé !`, });
-// });
+    console.log(request.params);
+    response.status(200).json({ message: `La gare ${request.params.id} a bien été supprimé !`, });
+});
 
 export default router;
