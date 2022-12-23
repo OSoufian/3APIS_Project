@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = "mongodb://supinfo:supinfo2022@mongo.cyprientaib.com";
+const MONGODB_URI = "mongodb://localhost:27017/railroad";
 
-const DBNAME = "railroad-soufian-lounes";
+const DBNAME = "railroad";
 
 mongoose.connect(MONGODB_URI, {
     dbName: DBNAME,
@@ -31,8 +31,27 @@ const TrainSchema = new mongoose.Schema({
 });
 const TrainstationSchema = new mongoose.Schema({
     name: String,
-    open_hour: Date,
-    close_hour: Date,
+    open_hour: {
+        hours: {
+            type: String, required: true
+        },
+        minutes: {
+            type: String, required: true
+        }
+    },
+    close_hour: {
+        hours: {
+            type: String, required: true
+        },
+        minutes: {
+            type: String, required: true
+        }
+    },
+    image: {
+        name: String,
+        ext: String,
+        data: Buffer,
+    },
 });
 
 export const User = mongoose.model("User", UserSchema);
