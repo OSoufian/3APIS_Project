@@ -1,4 +1,5 @@
 import express from "express";
+import session from "express-session";
 
 import usersRouter from "./routers/users-router.js";
 import authRoute from "./routers/authentication-router.js";
@@ -8,6 +9,9 @@ import trainstationsRouter from "./routers/trainstations-router.js";
 const app = express();
 
 app.use(express.json());
+app.use(session({
+    secret: "secret"
+}));
 
 app.use("/users", usersRouter);
 app.use("/api/auth", authRoute);

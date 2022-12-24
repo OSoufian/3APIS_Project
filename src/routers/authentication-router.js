@@ -2,6 +2,7 @@ import express from "express";
 import { User } from "../mongo.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import session from "express-session";
 
 const rounds = 10;
 const secretToken = 'lounes-soufian'
@@ -38,9 +39,13 @@ router.get("/login", (request, response) => {
             if (!user) response.status(404).json({error: "Pas d'utilisateur avec cet email"})
             else {
                 bcrypt.compare(request.body.password, user.password, (error, match) => {
-                    if (error) response.status(500).json(error)
-                    else if (match) response.status(200).json({user: user, token: generateToken(user)})
-                    else response.status(403).json({error: "Le mot de passe est incorrect"})
+                    if (error) response.status(500).json(error);
+                    else if (match) {
+                        request.session.userRole = user.role;
+                        request.session.userID = user._id;
+                        response.status(200).json({user: user, token: generateToken(user)})
+                    }
+                    else response.status(403).json({error: "Le mot de passe est incorrect"});
                 })
             }
         }
