@@ -5,30 +5,32 @@ import { User } from "../mongo.js";
 import app from "../server.js";
 
 describe("Users Router GET /", () => {
-    beforeAll(async () => {
-      await User.deleteMany({});
-      await User.create({
+  beforeAll(async () => {
+    await User.deleteMany({});
+    await User.create({
+      email: "lounes.behloul@supinfo.com",
+      password: "lounesBehloul",
+    });
+    await User.create({
+      email: "soufian.oualla@supinfo.com",
+      password: "soufianOualla",
+    });
+  });
+
+  it("should get the list of users", async () => {
+    const response = await supertest(app)
+      .get("/users")
+      .expect(200);
+
+    expect(response.body[0]).toEqual(
+      expect.objectContaining({
+        _id: expect.any(String),
         email: "lounes.behloul@supinfo.com",
         password: "lounesBehloul",
-      });
-      await User.create({
-        email: "soufian.oualla@supinfo.com",
-        password: "soufianOualla",
-      });
-    });
-  
-    it("should get the list of users", async () => {
-      const response = await supertest(app).get("/users").expect(200);
-  
-      expect(response.body[0]).toEqual(
-        expect.objectContaining({
-          _id: expect.any(String),
-          email: "lounes.behloul@supinfo.com",
-          password: "lounesBehloul",
-        })
-      );
-    });
-  });  
+      })
+    );
+  });
+});
 
 describe("Users Router PUT /", () => {
   let id;
@@ -47,7 +49,7 @@ describe("Users Router PUT /", () => {
       .set("Authorization", "admin")
       .send({
         email: "test.user@gmail.com",
-        password: "tesm"
+        password: "tesm",
       })
       .expect(200);
 

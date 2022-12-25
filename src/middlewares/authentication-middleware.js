@@ -30,5 +30,15 @@ export function isValidAdminOrEmployee() {
   };  
 }
 
+export function isValidAdminOrCurrentUser() {
+  return (request, response, next) => {
+    if (isValidUser("admin", request.session.userRole) || isCurrentUser(request.params.id, request.session.userID))
+      next();
+    else 
+      response.status(401).send("Unauthorized");
+  };  
+}
+
 export const isAdminEmployeeOrCurrentUser = isValidAdminEmployeeOrCurrentUser();
 export const isAdminOrEmployee = isValidAdminOrEmployee();
+export const isAdminOrCurrentUser = isValidAdminOrCurrentUser();
