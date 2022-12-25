@@ -33,16 +33,17 @@ router.get("/", async (request, response) => {
 
 router.put("/:id", upload.single("image"), async (request, response) => {
     const id = request.params.id;
-    var ext = re.exec(request.file.originalname)[1];
+    var ext;
+    request.file ? ext = re.exec(request.file.originalname)[1] : null;
     const trainstation = await Trainstation.findByIdAndUpdate(id,
         {
             name: request.body.name,
             open_hour: { hours: request.body.open_hours, minutes: request.body.open_minutes },
             close_hour: { hours: request.body.close_hours, minutes: request.body.close_minutes },
             image: {
-                name: request.file.originalname,
+                name: request.file ? request.file.originalname : null,
                 ext: ext,
-                data: fs.readFileSync("uploads/" + request.file.filename),          
+                data: fs.readFileSync("uploads/" + (request.file ? request.file.filename : null)),          
             }
         },         
         { new: true });

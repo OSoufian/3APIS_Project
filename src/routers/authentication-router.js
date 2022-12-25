@@ -16,7 +16,7 @@ router.post('/inscription', (request, response) => {
             const newUser = User({...request.body, password: hash});
             const userEmail = await User.findOne({ email: newUser.email});
             if (userEmail !== null) {
-                response.status(404).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
+                response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
                 return;
             }
             newUser.save()

@@ -12,7 +12,6 @@ describe("Users Router POST /", () => {
   it("should add the User", async () => {
     const response = await supertest(app)
       .post("/api/auth/inscription")
-      .set("Authorization", "admin")
       .send({
         email: "test.user@gmail.com",
         username: "tester",
@@ -22,7 +21,7 @@ describe("Users Router POST /", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
-        token: expect.any(String),
+        message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`
       })
     );
   });

@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = "mongodb://localhost:27017/railroad";
 
-const DBNAME = "railroad";
+const DBNAME =
+  process.env.NODE_ENV === "test"
+    ? "railroad-test"
+    : "railroad";
 
 mongoose.connect(MONGODB_URI, {
     dbName: DBNAME,

@@ -2,7 +2,7 @@ import express from "express";
 import session from "express-session";
 
 import { User } from "../mongo.js";
-import { isAdminEmployeeOrCurrentUser, isAdminOrEmployee, isAdminOrCurrentUser } from "../middlewares/authentication-middleware.js";
+import { isAdmin, isAdminOrEmployee } from "../middlewares/authentication-middleware.js";
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.get("/:id", isAdminOrEmployee, async (request, response) => {
   response.status(200).json(user);
 });
 
-router.put("/:id", isAdminOrCurrentUser, async (request, response) => {
+router.put("/:id", isAdmin, async (request, response) => {
   const id = request.params.id;
   const user = await User.findByIdAndUpdate(id, request.body, { new: true });
 
@@ -36,7 +36,7 @@ router.put("/:id", isAdminOrCurrentUser, async (request, response) => {
   response.status(200).json(user);
 });
 
-router.delete("/:id", isAdminOrCurrentUser, async (request, response) => {
+router.delete("/:id", isAdmin, async (request, response) => {
   const id = request.params.id;
   const user = await User.findByIdAndDelete(id);
 

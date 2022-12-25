@@ -1,19 +1,22 @@
-import { Train } from "../mongo.js";
 import express from "express";
+import { Train } from "../mongo.js";
+
+import { isAdmin } from "../middlewares/authentication-middleware.js";
 
 const router = express.Router();
 
-router.post("/", async (request, response) => {
+router.post("/", isAdmin, async (request, response) => {
     const newTrain = await Train.create(request.body);
     response.status(201).json(newTrain);
 });
   
 router.get("/", async (request, response) => {
-    const trains = await Train.find();
+    console.log(request.headers.sort);
+    const trains = await Train.find().sort({ [request.headers.sort]: -1 });
     response.status(200).json(trains);
 });
 
-router.put("/:id", async (request, response) => {
+router.put("/:id", isAdmin, async (request, response) => {
     const id = request.params.id;
     const train = await Train.findByIdAndUpdate(id, request.body, { new: true });
   
@@ -25,7 +28,7 @@ router.put("/:id", async (request, response) => {
     response.status(200).json(train);
 });
   
-router.delete("/:id", async (request, response) => {
+router.delete("/:id", isAdmin, async (request, response) => {
     const id = request.params.id;
     const train = await Train.findByIdAndDelete(id);
 
