@@ -27,8 +27,13 @@ router.post("/", upload.single("image"), async (request, response) => {
 });
   
 router.get("/", async (request, response) => {
-    const trainstations = await Trainstation.find();
-    response.status(200).json(trainstations);
+    const trainstations = Trainstation.find();
+
+    if (request.headers.sort == "name") {
+        const order = (request.headers.ascending === "false" ? -1 : 1);
+        trainstations.sort({ [request.headers.sort]: order });
+    }
+    response.status(200).json(await trainstations);
 });
 
 router.put("/:id", upload.single("image"), async (request, response) => {

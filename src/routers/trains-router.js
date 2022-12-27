@@ -11,9 +11,17 @@ router.post("/", isAdmin, async (request, response) => {
 });
   
 router.get("/", async (request, response) => {
-    console.log(request.headers.sort);
-    const trains = await Train.find().sort({ [request.headers.sort]: -1 });
-    response.status(200).json(trains);
+    var trains = Train.find();
+
+    if (request.headers.sort !== '') {
+        const order = (request.headers.ascending === "false" ? -1 : 1);
+        trains.sort({ [request.headers.sort]: order });
+    }
+
+    const limit = (request.headers.limit === '' ? 10 : request.headers.limit);
+    trains.limit(limit);
+    
+    response.status(200).json(await trains);
 });
 
 router.put("/:id", isAdmin, async (request, response) => {
