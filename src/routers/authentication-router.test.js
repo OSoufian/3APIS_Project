@@ -21,7 +21,26 @@ describe("Users Router POST /", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
-        message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`
+        message: `Bienvenue tester, ton compte a été créé avec succès. Tu peux te connecter !`
+      })
+    );
+  });
+});
+
+describe("Users Router GET /", () => {
+
+  it("should login to the User", async () => {
+    const response = await supertest(app)
+      .get("/api/auth/login")
+      .send({
+        email: "test.user@gmail.com",
+        password: "test12",
+      })
+      .expect(200);
+
+      expect(response.body).toEqual(
+      expect.objectContaining({
+        message: `Salut tester, tu as été connecté avec succès !`
       })
     );
   });

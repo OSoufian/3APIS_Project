@@ -76,7 +76,6 @@ router.delete("/:id", async (request, response) => {
         return;
     }
 
-    console.log(request.params);
     response.status(200).json({ message: `La gare ${request.params.id} a bien été supprimé !`, });
 });
 

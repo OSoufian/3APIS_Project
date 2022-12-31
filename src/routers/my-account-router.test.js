@@ -5,83 +5,77 @@ import { isCurrentUser } from "../middlewares/authentication-middleware.js";
 import { User } from "../mongo.js";
 import app from "../server.js";
 
-// describe("Trains Router GET /", () => {
-//   beforeAll(async () => {
-//     await Train.deleteMany({});
-//     await Train.create({
-//       name: "Paris-Lyon",
-//       start_station: "Paris",
-//       end_station: "Lyon",
-//       time_of_departure: "2022-12-10T03:26:00.000Z"
-//     });
-//     await Train.create({
-//         name: "Paris-Caen",
-//         start_station: "Paris",
-//         end_station: "Caen",
-//         time_of_departure: "2022-12-04T03:26:00.000Z"
-//       });
-//   });
+describe("My account Router GET /", () => {
+    beforeAll(async () => {
+        await supertest(app)
+        .post("/api/auth/inscription")
+        .send({
+            email: "test.user@gmail.com",
+            username: "tester",
+            password: "test12",
+        });
+        await supertest(app)
+        .get("/api/auth/login")
+        .send({
+            email: "test.user@gmail.com",
+            password: "test12",
+        });
+    });
+  
+    it("should get the current user", async () => {
+      const response = await supertest(app).get("/my_account").expect(200);
+  
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          _id: expect.any(String),
+          email: "test.user@gmail.com",
+          username: "tester",
+          password: "test12",
+        })
+      );
+    });
+  });  
 
-//   it("should get the list of train", async () => {
-//     const response = await supertest(app)
-//       .get("/trains")
-//       .expect(200);
+describe("My account Router PUT /", () => {
+  let id;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    const user = await User.create({
+      email: "test.user@gmail.com",
+      password: "test12",
+    });
+    id = user._id;
+  });
 
-//     expect(response.body[0]).toEqual(
-//       expect.objectContaining({
-//         _id: expect.any(String),
-//         name: "Paris-Lyon",
-//         start_station: "Paris",
-//         end_station: "Lyon",
-//         time_of_departure: "2022-12-10T03:26:00.000Z"
-//       })
-//     );
-//   });
-// });
+  it("should update the user", async () => {
+    const response = await supertest(app)
+      .put(`/my_account`)
+      .send({
+        email: "test.user@gmail.com",
+        password: "tesm"
+      })
+      .expect(200);
 
-// describe("Trains Router PUT /", () => {
-//   let id;
-//   beforeAll(async () => {
-//     await Train.deleteMany({});
-//     const train = await Train.create({
-//         name: "Paris-Lyon",
-//         start_station: "Paris",
-//         end_station: "Lyon",
-//         time_of_departure: "2022-12-10T03:26:00.000Z"
-//     });
-//     id = train._id;
-//   });
+    expect(response.body).toMatchObject({ password: "tesm" });
+  });
+});
 
-//   it("should update the train", async () => {
-//     const response = await supertest(app)
-//       .put(`/trains/${id}`)
-//       .send({
-//         start_station: "Caen"
-//       })
-//       .expect(200);
+describe("My account Router DELETE /", () => {
+  let id;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    const user = await User.create({
+      email: "test.user@gmail.com",
+      password: "test12",
+    });
+    id = user._id;
+  });
 
-//     expect(response.body).toMatchObject({ start_station: "Caen" });
-//   });
-// });
+  it("should delete the user", async () => {
+    const response = await supertest(app)
+      .delete(`/my_account`)
+      .expect(200);
 
-// describe("Trains Router DELETE /", () => {
-//   let id;
-//   beforeAll(async () => {
-//     await Train.deleteMany({});
-//     const train = await Train.create({
-//         name: "Paris-Lyon",
-//         start_station: "Paris",
-//         end_station: "Lyon",
-//         time_of_departure: "2022-12-10T03:26:00.000Z"
-//     });
-//     id = train._id;
-//   });
-
-//   it("should delete the train", async () => {
-//     const response = await supertest(app)
-//       .delete(`/trains/${id}`)
-//       .expect(200);
-
-//     expect(response.body).toMatchObject({});
-//   });
-// });
+    expect(response.body).toMatchObject({});
+  });
+});

@@ -36,18 +36,18 @@ const TrainstationSchema = new mongoose.Schema({
     name: String,
     open_hour: {
         hours: {
-            type: String, required: true
+            type: String
         },
         minutes: {
-            type: String, required: true
+            type: String
         }
     },
     close_hour: {
         hours: {
-            type: String, required: true
+            type: String
         },
         minutes: {
-            type: String, required: true
+            type: String
         }
     },
     image: {

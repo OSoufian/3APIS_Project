@@ -4,6 +4,7 @@ import express from "express";
 import { Trainstation } from "../mongo.js";
 import app from "../server.js";
 import { IMAGE, IMAGE2 } from "../../trainstationImage";
+import { any } from "webidl-conversions";
 
 describe("Trainstations Router POST /", () => {
     beforeAll(async () => {
@@ -20,14 +21,8 @@ describe("Trainstations Router POST /", () => {
             image: IMAGE
         })
         .expect(201);
-  
-        expect(response.body).toMatchObject(
-            {
-              _id: expect.any(String),
-              name: "Paris-Lyon",
-              image: expect.anything()
-            }
-          );
+
+        expect(response.body["name"]).toEqual("Paris-Lyon");
     });
   });
 
