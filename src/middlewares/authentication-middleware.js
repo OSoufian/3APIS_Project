@@ -27,7 +27,7 @@ export function getCurrentUser() {
   return (request, response, next) => {
     const id = request.session.userID;
     if (!id) {
-      response.status(404).send("Aucun utilisateur connecté !");
+      response.status(401).send("Aucun utilisateur connecté !");
       return;
     } else {
       next();

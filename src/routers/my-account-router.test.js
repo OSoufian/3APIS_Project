@@ -7,6 +7,7 @@ import app from "../server.js";
 
 describe("My account Router GET /", () => {
     beforeAll(async () => {
+        await User.deleteMany({});
         await supertest(app)
         .post("/api/auth/inscription")
         .send({
@@ -24,7 +25,7 @@ describe("My account Router GET /", () => {
   
     it("should get the current user", async () => {
       const response = await supertest(app).get("/my_account").expect(200);
-  
+
       expect(response.body).toEqual(
         expect.objectContaining({
           _id: expect.any(String),

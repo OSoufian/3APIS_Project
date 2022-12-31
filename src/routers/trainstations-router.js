@@ -2,10 +2,11 @@ import { Trainstation } from "../mongo.js";
 import express from "express";
 import multer from "multer";
 import fs from "fs";
+import sharp from "sharp";
 
 const router = express.Router();
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/original/" });
 
 const re = /(?:\.([^.]+))?$/;
 
@@ -13,8 +14,19 @@ router.post("/", upload.single("image"), async (request, response) => {
     let ext;
     let data;
 
-    request.file ? ext = re.exec(request.file.originalname)[1] : ext = null;
-    request.file ? data = fs.readFileSync("uploads/" + request.file.filename) : data = null;
+    if (request.file) {
+        ext = re.exec(request.file.originalname)[1];
+        data = fs.readFileSync("uploads/original/" + request.file.filename);
+        await sharp("uploads/original/" + request.file.filename).resize({
+            width: 200,
+            height: 200
+        }).toFile(`uploads/resized/${request.file.filename}-resized`);
+
+        data = fs.readFileSync(`uploads/resized/${request.file.filename}-resized`)
+    } else {
+        ext = null;
+        data = null;
+    }
 
     const newTrainstation = Trainstation({
         ...request.body,
