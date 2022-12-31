@@ -11,7 +11,7 @@ router.post("/", isAdmin, async (request, response) => {
 });
   
 router.get("/", async (request, response) => {
-    var trains = Train.find();
+    let trains = Train.find();
 
     if (request.headers.sort !== '') {
         const order = (request.headers.ascending === "false" ? -1 : 1);

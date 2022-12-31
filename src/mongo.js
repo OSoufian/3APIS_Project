@@ -58,7 +58,7 @@ const TrainstationSchema = new mongoose.Schema({
 });
 
 TrainstationSchema.methods.toJSON = function() {
-    var obj = this.toObject();
+    const obj = this.toObject();
     delete obj.image.data;
     return obj;
 }

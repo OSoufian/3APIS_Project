@@ -10,16 +10,20 @@ const upload = multer({ dest: "uploads/" });
 const re = /(?:\.([^.]+))?$/;
 
 router.post("/", upload.single("image"), async (request, response) => {
-    var ext = re.exec(request.file.originalname)[1];
+    let ext;
+    let data;
+
+    request.file ? ext = re.exec(request.file.originalname)[1] : ext = null;
+    request.file ? data = fs.readFileSync("uploads/" + request.file.filename) : data = null;
 
     const newTrainstation = Trainstation({
         ...request.body,
         open_hour: { hours: request.body.open_hours, minutes: request.body.open_minutes },
         close_hour: { hours: request.body.close_hours, minutes: request.body.close_minutes },
         image: {
-            name: request.file.originalname,
+            name: request.file ? request.file.originalname : null,
             ext: ext,
-            data: fs.readFileSync("uploads/" + request.file.filename),          
+            data: data,          
         },
     });
     newTrainstation.save();
@@ -38,8 +42,10 @@ router.get("/", async (request, response) => {
 
 router.put("/:id", upload.single("image"), async (request, response) => {
     const id = request.params.id;
-    var ext;
+    let ext;
     request.file ? ext = re.exec(request.file.originalname)[1] : null;
+    let data;
+    request.file ? data = fs.readFileSync("uploads/" + request.file.filename) : data = null;
     const trainstation = await Trainstation.findByIdAndUpdate(id,
         {
             name: request.body.name,
@@ -48,7 +54,7 @@ router.put("/:id", upload.single("image"), async (request, response) => {
             image: {
                 name: request.file ? request.file.originalname : null,
                 ext: ext,
-                data: fs.readFileSync("uploads/" + (request.file ? request.file.filename : null)),          
+                data: data,
             }
         },         
         { new: true });

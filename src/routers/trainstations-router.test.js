@@ -19,16 +19,14 @@ describe("Trainstations Router POST /", () => {
             close_hour: {hours: "16", minutes: "00"},
             image: IMAGE
         })
-        .expect(200);
+        .expect(201);
   
-        expect(response.body).toEqual(
-            expect.objectContaining({
+        expect(response.body).toMatchObject(
+            {
               _id: expect.any(String),
               name: "Paris-Lyon",
-              open_hour: {hours: "12", minutes: "00"},
-              close_hour: {hours: "16", minutes: "00"},
-              image: IMAGE
-            })
+              image: expect.anything()
+            }
           );
     });
   });
@@ -85,12 +83,13 @@ describe("Trainstations Router PUT /", () => {
     const response = await supertest(app)
       .put(`/trainstations/${id}`)
       .send({
-          close_hour: {hours: "11", minutes: "00"},
-        image: IMAGE
+        name: "Paris-Bercy"
       })
       .expect(200);
 
-      expect(response.body).toMatchObject({close_hour: {hours: "11", minutes: "00"}});
+      expect(response.body).toMatchObject({
+        name: "Paris-Bercy"
+      });
   });
 });
 
