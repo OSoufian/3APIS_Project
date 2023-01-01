@@ -19,6 +19,7 @@ router.post('/inscription', (request, response) => {
                 response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
                 return;
             }
+            request.headers.authorization = generateToken(newUser);
             newUser.save()
             .then(
                 user => {
@@ -35,7 +36,7 @@ router.post('/inscription', (request, response) => {
 });
 
 function generateToken(user) {
-    return jwt.sign({data: user}, secretToken, {expiresIn: '24h'})
+    return jwt.sign({data: user}, secretToken, {expiresIn: '240h'})
 }
 
 router.get("/login", (request, response) => {
@@ -49,7 +50,8 @@ router.get("/login", (request, response) => {
                         request.session.username = user.username;
                         request.session.userRole = user.role;
                         request.session.userID = user._id;
-                        response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`})
+                        response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`, 
+                        id: user._id, user: user})
                     }
                     else response.status(403).json({error: "Le mot de passe est incorrect !"});
                 })

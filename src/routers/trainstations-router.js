@@ -1,4 +1,4 @@
-import { Trainstation } from "../mongo.js";
+import { Trainstation, Train } from "../mongo.js";
 import express from "express";
 import multer from "multer";
 import fs from "fs";
@@ -88,7 +88,16 @@ router.delete("/:id", async (request, response) => {
         return;
     }
 
-    response.status(200).json({ message: `La gare ${request.params.id} a bien été supprimé !`, });
+    const start_trains = Train.find({ start_station: trainstation.name });
+    const end_trains = Train.find({ end_station: trainstation.name });
+    const trains = Object.entries(await start_trains).concat(Object.entries(await end_trains));
+    start_trains.clone().deleteMany().exec();
+    end_trains.clone().deleteMany().exec();
+
+    let json = [{trainstation: `La ${trainstation.name} a bien été supprimé !`}];
+    trains.forEach(train => json.push({train: `Le train ${train[1].name} a bien été supprimé !`}));
+
+    response.status(200).json(json);
 });
 
 export default router;
