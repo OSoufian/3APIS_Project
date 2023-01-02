@@ -23,15 +23,16 @@ const UserSchema = new mongoose.Schema({
     email: String,
     username: String,
     password: String,
-    role: { type: String, default: 'user' },
+    role: { type: String, default: 'user' }
 });
 
 const TrainSchema = new mongoose.Schema({
     name: String,
     start_station: String,
     end_station: String,
-    time_of_departure: Date,
+    time_of_departure: Date
 });
+
 const TrainstationSchema = new mongoose.Schema({
     name: String,
     open_hour: {
@@ -53,8 +54,8 @@ const TrainstationSchema = new mongoose.Schema({
     image: {
         name: String,
         ext: String,
-        data: Buffer,
-    },
+        data: Buffer
+    }
 });
 
 TrainstationSchema.methods.toJSON = function() {
@@ -63,6 +64,14 @@ TrainstationSchema.methods.toJSON = function() {
     return obj;
 }
 
+const TicketSchema = new mongoose.Schema({
+    user_id: String,
+    train_id: String,
+    reservation_time: Date
+    // TODO: Stocker directement le train en temps que type Object
+});
+
 export const User = mongoose.model("User", UserSchema);
 export const Train = mongoose.model("Train", TrainSchema);
 export const Trainstation = mongoose.model("Trainstation", TrainstationSchema);
+export const Ticket = mongoose.model("Ticket", TicketSchema);

@@ -51,7 +51,7 @@ router.get("/login", (request, response) => {
                         request.session.userRole = user.role;
                         request.session.userID = user._id;
                         response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`, 
-                        id: user._id, user: user})
+                        id: user._id, user: request.headers.authorization})
                     }
                     else response.status(403).json({error: "Le mot de passe est incorrect !"});
                 })
