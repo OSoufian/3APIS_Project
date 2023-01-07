@@ -1,21 +1,29 @@
 import supertest from "supertest";
-import superagent from "superagent";
 import express from "express";
 import { isCurrentUser } from "../middlewares/authentication-middleware.js";
 
 import { User } from "../mongo.js";
 import app from "../server.js";
 
+var mockApp = express();
+mockApp.use(session({
+  secret: "secret"
+}));
+mockApp.all("*", function (req, res, next) {
+  req.session.userID = "testId";
+  next();
+});
+mockApp.use(app);
+
 describe("My account Router GET /", () => {
   beforeAll(async () => {
-    await User.deleteMany({});
     await supertest(app).post("/api/auth/inscription").send({
       email: "test2.user@gmail.com",
       username: "tester",
       password: "test12",
     });
   });
-  
+
   it("should get the current user", async () => {
     // var user = superagent.agent();
     const user = await supertest(app).get("/api/auth/login").send({
@@ -23,9 +31,12 @@ describe("My account Router GET /", () => {
       password: "test12",
     });
 
-    console.log(user);
-    const response = user.get("/my_account");
-    
+    console.log(request.session.userID);
+    console.log(user.body.id);
+
+    const response = await supertest(app).get("/my_account");
+    // console.log(response);
+
     expect(response.body).toEqual(
       expect.objectContaining({
         _id: expect.any(String),

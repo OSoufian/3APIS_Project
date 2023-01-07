@@ -65,10 +65,9 @@ TrainstationSchema.methods.toJSON = function() {
 }
 
 const TicketSchema = new mongoose.Schema({
-    user_id: String,
-    train_id: String,
+    user: [UserSchema],
+    train: [TrainSchema],
     reservation_time: Date
-    // TODO: Stocker directement le train en temps que type Object
 });
 
 export const User = mongoose.model("User", UserSchema);
