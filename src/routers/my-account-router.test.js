@@ -1,23 +1,17 @@
 import supertest from "supertest";
+import session from "supertest-session";
 import express from "express";
-import { isCurrentUser } from "../middlewares/authentication-middleware.js";
+import bcrypt from "bcrypt";
 
 import { User } from "../mongo.js";
 import app from "../server.js";
 
-var mockApp = express();
-mockApp.use(session({
-  secret: "secret"
-}));
-mockApp.all("*", function (req, res, next) {
-  req.session.userID = "testId";
-  next();
-});
-mockApp.use(app);
+let testSession = null;
 
 describe("My account Router GET /", () => {
   beforeAll(async () => {
-    await supertest(app).post("/api/auth/inscription").send({
+    testSession = session(app);
+    await testSession.post("/api/auth/inscription").send({
       email: "test2.user@gmail.com",
       username: "tester",
       password: "test12",
@@ -25,69 +19,65 @@ describe("My account Router GET /", () => {
   });
 
   it("should get the current user", async () => {
-    // var user = superagent.agent();
-    const user = await supertest(app).get("/api/auth/login").send({
+    const user = await testSession.get("/api/auth/login").send({
       email: "test2.user@gmail.com",
       password: "test12",
     });
 
-    console.log(request.session.userID);
-    console.log(user.body.id);
+    testSession.userID = user.body.id;
+    const response = await testSession.get("/my_account").expect(200);
 
-    const response = await supertest(app).get("/my_account");
-    // console.log(response);
-
-    expect(response.body).toEqual(
-      expect.objectContaining({
-        _id: expect.any(String),
-        email: "test.user@gmail.com",
-        username: "tester",
-        password: "test12",
-      })
-    );
+    expect(response.body["email"]).toEqual("test2.user@gmail.com");
   });
 });
 
-// describe("My account Router PUT /", () => {
-//   let id;
-//   beforeAll(async () => {
-//     await User.deleteMany({});
-//     const user = await User.create({
-//       email: "test.user@gmail.com",
-//       password: "test12",
-//     });
-//     id = user._id;
-//   });
+describe("My account Router PUT /", () => {
+  const response = null;
+  const Hash = null;
+  it("should update the user", async () => {
+    const user = await testSession.get("/api/auth/login").send({
+      email: "test2.user@gmail.com",
+      password: "test12",
+    });
+    bcrypt.hash("tesm", 10, async (error, hash) => {
+      if (error) response.status(500).json(error);
+      else {
+          Hash = hash;
+          response = await testSession
+          .put(`/my_account`)
+          .send({
+            password: Hash,
+          })
+          .expect(200);
+          response.save();
+          
+        }});
+    expect(response.body).toMatchObject({ password: hash });
+  });
+});
 
-//   it("should update the user", async () => {
-//     const response = await supertest(app)
-//       .put(`/my_account`)
-//       .send({
-//         email: "test.user@gmail.com",
-//         password: "tesm"
-//       })
-//       .expect(200);
+describe("My account Router DELETE /", () => {
+  it("should delete the user", async () => {
+    const user = await testSession.get("/api/auth/login").send({
+      email: "test2.user@gmail.com",
+      password: "test12",
+    });
 
-//     expect(response.body).toMatchObject({ password: "tesm" });
-//   });
-// });
+    const response = await testSession.delete(`/my_account`).expect(200);
 
-// describe("My account Router DELETE /", () => {
-//   let id;
-//   beforeAll(async () => {
-//     await User.deleteMany({});
-//     const user = await User.create({
-//       email: "test.user@gmail.com",
-//       password: "test12",
-//     });
-//     id = user._id;
-//   });
+    expect(response.body).toMatchObject({});
+  });
+});
 
-//   it("should delete the user", async () => {
-//     const response = await supertest(app)
-//       .delete(`/my_account`)
-//       .expect(200);
+describe("My account Router GET /", () => {
 
-//     expect(response.body).toMatchObject({});
-//   });
-// });
+  it("should get the tickets of the user", async () => {
+    const user = await testSession.get("/api/auth/login").send({
+      email: "test2.user@gmail.com",
+      password: "test12",
+    });
+
+    testSession.userID = user.body.id;
+    await testSession.get("/my_account/tickets").expect(200);
+  });
+});

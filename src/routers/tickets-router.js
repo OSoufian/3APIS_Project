@@ -14,10 +14,12 @@ router.post("/:id", async (request, response) => {
         return;
     }
 
+    // TODO: verify the validity of the ticket
+
     const newTicket = await Ticket.create({
         user: user,
         train: train,
-        reservation_time: new Date()
+        reservation_time: new Date() // TODO : Arranger la timezone
     });
     
     response.status(201).json(newTicket);

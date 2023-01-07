@@ -1,5 +1,5 @@
 import express from "express";
-import session from "express-session";
+import bcrypt from "bcrypt";
 
 import { User } from "../mongo.js";
 import { isAdmin, isAdminOrEmployee } from "../middlewares/authentication-middleware.js";
@@ -25,15 +25,32 @@ router.get("/:id", isAdminOrEmployee, async (request, response) => {
 });
 
 router.put("/:id", isAdmin, async (request, response) => {
-  const id = request.params.id;
-  const user = await User.findByIdAndUpdate(id, request.body, { new: true });
+  const userEmail = await User.findOne({ email: request.body.email});
 
-  if (!user) {
-    response.status(404).json({ message: "Utilisateur inexistant !" });
+  if (userEmail !== null) {
+    response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
     return;
   }
 
-  response.status(200).json(user);
+  // TODO : vérifier si aucune modification a été faite
+
+  // TODO : crypter le mot de passe (à tester)
+
+  bcrypt.hash(request.body.password, 10, async (error, hash) => {
+    if (error) response.status(500).json(error);
+    else {
+      const user = await User.findByIdAndUpdate(
+        request.params.id,
+        { ...request.body, password: hash },
+        { new: true }
+      );
+      if (!user) {
+        response.status(404).json({ message: "Utilisateur inexistant !" });
+        return;
+      }
+      response.status(200).json(user);
+    }
+  });
 });
 
 router.delete("/:id", isAdmin, async (request, response) => {

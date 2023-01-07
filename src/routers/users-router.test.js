@@ -1,33 +1,45 @@
 import supertest from "supertest";
+import session from "supertest-session";
+import bcrypt from "bcrypt";
 import express from "express";
-import { isAdminEmployeeOrCurrentUser, isAdminOrEmployee, isAdminOrCurrentUser } from "../middlewares/authentication-middleware.js";
 
 import { User } from "../mongo.js";
 import app from "../server.js";
 
+let testSession = null;
+
 describe("Users Router GET /", () => {
-    beforeAll(async () => {
-        await User.create({
-        email: "lounes.behloul@supinfo.com",
-        password: "lounesBehloul",
-        role: "admin"
-      });
-    });
-  
-    it("should get the list of users", async () => {
-      const user = await User.findOne({email: "lounes.behloul@supinfo.com"})
-      console.log(user, user.role)
-      const response = await supertest(app).get("/users").auth(user.email, user.password).expect(200);
-  
-      expect(response.body[0]).toEqual(
-        expect.objectContaining({
-          _id: expect.any(String),
+  beforeAll(async () => {
+    await User.deleteMany({});
+    testSession = session(app);
+    bcrypt.hash("lounesBehloul", 10, async (error, hash) => {
+      if (error) response.status(500).json(error);
+      else {
+        const newUser = User({
           email: "lounes.behloul@supinfo.com",
-          password: "lounesBehloul",
-        })
-      );
+          username: "loki7even",
+          password: hash,
+          role: "admin",
+        });
+
+        newUser.save();
+      }
     });
-  });  
+  });
+
+  it("should get the list of users", async () => {
+    await testSession.get("/api/auth/login").send({
+      email: "lounes.behloul@supinfo.com",
+      password: "lounesBehloul",
+    });
+
+    const user = await testSession.get("/my_account");
+    // console.log(user);
+    const response = await testSession.get("/users").expect(200);
+
+    expect(response.body[0]["email"]).toEqual("lounes.behloul@supinfo.com");
+  });
+});
 
 // describe("Users Router PUT /", () => {
 //   let id;

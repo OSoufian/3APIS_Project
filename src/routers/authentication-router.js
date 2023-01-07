@@ -48,6 +48,7 @@ router.get("/login", (request, response) => {
                     if (error) response.status(500).json(error);
                     else if (match) {
                         request.session.username = user.username;
+                        request.session.userEmail = user.email;
                         request.session.userRole = user.role;
                         request.session.userID = user._id;
                         response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`, 
