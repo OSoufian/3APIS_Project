@@ -19,15 +19,19 @@ router.post("/:id", isCurrentUser, async (request, response) => {
         return;
     }
 
+<<<<<<< HEAD
     if (new Date(train.time_of_departure).getTime() < new Date().getTime()) {
         response.status(404).json({ message: "La validité de ce ticket a expiré !" });
         return;
     };
+=======
+    // TODO: verify the validity of the ticket
+>>>>>>> 750d201778923506f450aabe14dc501939735e4e
 
     const newTicket = await Ticket.create({
         user: user,
         train: train,
-        reservation_time: new Date()
+        reservation_time: new Date() // TODO : Arranger la timezone
     });
     
     response.status(201).json(newTicket);
