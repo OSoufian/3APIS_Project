@@ -6,7 +6,7 @@ import app from "../server.js";
 
 describe("Users Router POST /", () => {
   beforeAll(async () => {
-    await User.deleteMany({});
+    await User.findOneAndDelete({email: "test.user@gmail.com"});
   });
 
   it("should add the User", async () => {

@@ -1,8 +1,10 @@
-import { Trainstation, Train } from "../mongo.js";
 import express from "express";
 import multer from "multer";
 import fs from "fs";
 import sharp from "sharp";
+
+import { Trainstation, Train } from "../mongo.js";
+import { isAdmin } from "../middlewares/authentication-middleware.js";
 
 const router = express.Router();
 
@@ -10,7 +12,7 @@ const upload = multer({ dest: "uploads/original/" });
 
 const re = /(?:\.([^.]+))?$/;
 
-router.post("/", upload.single("image"), async (request, response) => {
+router.post("/", isAdmin, upload.single("image"), async (request, response) => {
     let ext;
     let data;
 
@@ -52,7 +54,7 @@ router.get("/", async (request, response) => {
     response.status(200).json(await trainstations);
 });
 
-router.put("/:id", upload.single("image"), async (request, response) => {
+router.put("/:id", isAdmin, upload.single("image"), async (request, response) => {
     const id = request.params.id;
     let ext;
     request.file ? ext = re.exec(request.file.originalname)[1] : null;
@@ -79,7 +81,7 @@ router.put("/:id", upload.single("image"), async (request, response) => {
     response.status(200).json(trainstation);
 });
   
-router.delete("/:id", async (request, response) => {
+router.delete("/:id", isAdmin, async (request, response) => {
     const id = request.params.id;
     const trainstation = await Trainstation.findByIdAndDelete(id);
 

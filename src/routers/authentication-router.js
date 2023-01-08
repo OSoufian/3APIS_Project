@@ -19,11 +19,10 @@ router.post('/inscription', (request, response) => {
                 response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
                 return;
             }
-            request.headers.authorization = generateToken(newUser);
             newUser.save()
             .then(
                 user => {
-                    response.status(200).json({message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`})
+                    response.status(200).json({message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`, id: user.id})
                 }
             )
             .catch(
@@ -35,9 +34,9 @@ router.post('/inscription', (request, response) => {
     })
 });
 
-function generateToken(user) {
-    return jwt.sign({data: user}, secretToken, {expiresIn: '240h'})
-}
+// function generateToken(user) {
+//     return jwt.sign({data: user}, secretToken, {expiresIn: '240h'})
+// }
 
 router.get("/login", (request, response) => {
     User.findOne({email : request.body.email})
@@ -48,6 +47,7 @@ router.get("/login", (request, response) => {
                     if (error) response.status(500).json(error);
                     else if (match) {
                         request.session.username = user.username;
+                        request.session.userEmail = user.email;
                         request.session.userRole = user.role;
                         request.session.userID = user._id;
                         response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`, 

@@ -1,11 +1,16 @@
 import express from "express";
 import { Ticket, Train, User } from "../mongo.js";
 
-import { isAdmin } from "../middlewares/authentication-middleware.js";
+import { isAdmin, isCurrentUser, isAdminOrCurrentUser } from "../middlewares/authentication-middleware.js";
 
 const router = express.Router();
 
-router.post("/:id", async (request, response) => {
+router.get("/", isAdmin, async (request, response) => {
+    const tickets = await Ticket.find();
+    response.status(200).json(tickets);
+  });
+
+router.post("/:id", isCurrentUser, async (request, response) => {
     const user = await User.findById(request.session.userID);
     const train = await Train.findById(request.params.id);
 
@@ -13,6 +18,11 @@ router.post("/:id", async (request, response) => {
         response.status(404).json({ message: "Train inexistant !" });
         return;
     }
+
+    if (new Date(train.time_of_departure).getTime() < new Date().getTime()) {
+        response.status(404).json({ message: "La validité de ce ticket a expiré !" });
+        return;
+    };
 
     const newTicket = await Ticket.create({
         user: user,
@@ -23,7 +33,7 @@ router.post("/:id", async (request, response) => {
     response.status(201).json(newTicket);
 });
 
-router.post("/", async (request, response) => {
+router.post("/", isAdmin, async (request, response) => {
     const user = await User.findById(request.body.user_id);
     const train = await Train.findById(request.body.train_id);
 
@@ -46,25 +56,25 @@ router.post("/", async (request, response) => {
     response.status(201).json(newTicket);
 });
 
-// router.put("/:id", async (request, response) => {
-//     const user = await User.findById(request.body.user_id);
-//     const train = await Train.findById(request.body.train_id);
-
-//     const ticket = await Ticket.findByIdAndUpdate(request.params.id, {
-//         user: user,
-//         train: train,
-//     });
-  
-//     if (!ticket) {
-//       response.status(404).json({ message: "Train inexistant !" });
-//       return;
-//     }
-  
-//     response.status(200).json(train);
-// });
-
-router.put("/:id", async (request, response) => {
+router.put("/:id", isCurrentUser, async (request, response) => {
     const user = await User.findById(request.body.user_id);
+    const train = await Train.findById(request.body.train_id);
+
+    const ticket = await Ticket.findByIdAndUpdate(request.params.id, {
+        user: user,
+        train: train,
+    });
+  
+    if (!ticket) {
+      response.status(404).json({ message: "Ticket inexistant !" });
+      return;
+    }
+  
+    response.status(200).json(train);
+});
+
+router.put("/:id", isAdmin, async (request, response) => {
+    const user = await User.findById(request.session.userID);
     const train = await Train.findById(request.body.train_id);
 
     const ticket = await Ticket.findByIdAndUpdate(request.params.id, {
@@ -80,17 +90,18 @@ router.put("/:id", async (request, response) => {
     response.status(200).json(train);
 });
   
-router.delete("/:id", async (request, response) => {
+router.delete("/:id", isAdminOrCurrentUser, async (request, response) => {
     const id = request.params.id;
-    const train = await Train.findByIdAndDelete(id);
+    const ticket = await Ticket.findByIdAndDelete(id);
 
-    if (!train) {
-        response.status(404).json({ message: "Train inexistant !" });
+    if (!ticket) {
+        response.status(404).json({ message: "Ticket inexistant !" });
         return;
     }
 
     console.log(request.params);
     response.status(200).json({ message: `L'utilisateur ${request.params.id} a bien été supprimé !`, });
 });
+
 
 export default router;
