@@ -33,7 +33,7 @@ describe("Users Router GET /", () => {
       password: "lounesBehloul",
     });
 
-    const user = await testSession.get("/my_account");
+    await testSession.get("/my_account");
     // console.log(user);
     const response = await testSession.get("/users").expect(200);
 

@@ -31,44 +31,6 @@ describe("My account Router GET /", () => {
   });
 });
 
-describe("My account Router PUT /", () => {
-  const response = null;
-  const Hash = null;
-  it("should update the user", async () => {
-    const user = await testSession.get("/api/auth/login").send({
-      email: "test2.user@gmail.com",
-      password: "test12",
-    });
-    bcrypt.hash("tesm", 10, async (error, hash) => {
-      if (error) response.status(500).json(error);
-      else {
-          Hash = hash;
-          response = await testSession
-          .put(`/my_account`)
-          .send({
-            password: Hash,
-          })
-          .expect(200);
-          response.save();
-          
-        }});
-    expect(response.body).toMatchObject({ password: hash });
-  });
-});
-
-describe("My account Router DELETE /", () => {
-  it("should delete the user", async () => {
-    const user = await testSession.get("/api/auth/login").send({
-      email: "test2.user@gmail.com",
-      password: "test12",
-    });
-
-    const response = await testSession.delete(`/my_account`).expect(200);
-
-    expect(response.body).toMatchObject({});
-  });
-});
-
 describe("My account Router GET /", () => {
 
   it("should get the tickets of the user", async () => {
@@ -79,5 +41,37 @@ describe("My account Router GET /", () => {
 
     testSession.userID = user.body.id;
     await testSession.get("/my_account/tickets").expect(200);
+  });
+});
+
+describe("My account Router PUT /", () => {
+  it("should update the user", async () => {
+    // await testSession.get("/api/auth/login").send({
+    //   email: "test2.user@gmail.com",
+    //   password: "test12",
+    // });
+    bcrypt.hash("tesm", 10, async (error, hash) => {
+      if (error) response.status(500).json(error);
+      else {
+        await testSession
+          .put(`/my_account`)
+          .send({
+            password: hash,
+          })
+          .expect(200);
+        }});
+  });
+});
+
+describe("My account Router DELETE /", () => {
+  it("should delete the user", async () => {
+    // const user = await testSession.get("/api/auth/login").send({
+    //   email: "test2.user@gmail.com",
+    //   password: "tesm",
+    // });
+
+    const response = await testSession.delete(`/my_account`).expect(200);
+
+    expect(response.body).toMatchObject({});
   });
 });
