@@ -10,7 +10,6 @@ let testSession = null;
 
 describe("Users Router GET /", () => {
   beforeAll(async () => {
-<<<<<<< HEAD
     await User.findOneAndDelete({ email: "lounes.behloul@supinfo.com" });
     await User.findOneAndDelete({ email: "test3.user@gmail.com" });
     testSession = session(app);
@@ -28,38 +27,6 @@ describe("Users Router GET /", () => {
       email: "lounes.behloul@supinfo.com",
       password: "lounesBehloul",
     });
-=======
-    await User.deleteMany({});
-    testSession = session(app);
-    bcrypt.hash("lounesBehloul", 10, async (error, hash) => {
-      if (error) response.status(500).json(error);
-      else {
-        const newUser = User({
-          email: "lounes.behloul@supinfo.com",
-          username: "loki7even",
-          password: hash,
-          role: "admin",
-        });
-
-        newUser.save();
-      }
-    });
-  });
-
-  it("should get the list of users", async () => {
-    await testSession.get("/api/auth/login").send({
-      email: "lounes.behloul@supinfo.com",
-      password: "lounesBehloul",
-    });
-
-    await testSession.get("/my_account");
-    // console.log(user);
-    const response = await testSession.get("/users").expect(200);
-
-    expect(response.body[0]["email"]).toEqual("lounes.behloul@supinfo.com");
-  });
-});
->>>>>>> 750d201778923506f450aabe14dc501939735e4e
 
     const response = await testSession.get("/users").expect(200);
     expect(response.body[0]["email"]).toEqual("lounes.behloul@supinfo.com");

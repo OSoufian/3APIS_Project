@@ -23,10 +23,6 @@ router.put("/", isCurrentUser, async (request, response) => {
       });
     return;
   }
-<<<<<<< HEAD
-=======
-  // TODO : vérifier si aucune modification a été faite (optionnel)
->>>>>>> 750d201778923506f450aabe14dc501939735e4e
 
   bcrypt.hash(request.body.password, 10, async (error, hash) => {
     if (error) response.status(500).json(error);
@@ -51,7 +47,6 @@ router.delete("/", isCurrentUser, async (request, response) => {
 
 router.get("/tickets", isCurrentUser, async (request, response) => {
   const id = request.session.userID;
-<<<<<<< HEAD
   const tickets = await Ticket.find({ user : {user_id: id } });
   response.status(200).json(tickets);
 });
@@ -59,10 +54,6 @@ router.get("/tickets", isCurrentUser, async (request, response) => {
 router.get("/logout", isCurrentUser, async (request, response) => {
   request.session.destroy();
   response.status(200).send("Vous avez été déconnecté avec succcès !");
-=======
-  const tickets = await Ticket.find({ user_id: id });
-  response.status(200).json(tickets);
->>>>>>> 750d201778923506f450aabe14dc501939735e4e
 });
 
 export default router;

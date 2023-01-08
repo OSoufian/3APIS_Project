@@ -25,7 +25,6 @@ router.get("/:id", isAdminOrEmployee, async (request, response) => {
 });
 
 router.put("/:id", isAdmin, async (request, response) => {
-<<<<<<< HEAD
   const user = await User.findById(request.params.id);
   const newEmailUser = await User.findOne({ email: request.body.email});
 
@@ -34,19 +33,6 @@ router.put("/:id", isAdmin, async (request, response) => {
     return;
   }
   
-=======
-  const userEmail = await User.findOne({ email: request.body.email});
-
-  if (userEmail !== null) {
-    response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
-    return;
-  }
-
-  // TODO : vérifier si aucune modification a été faite
-
-  // TODO : crypter le mot de passe (à tester)
-
->>>>>>> 750d201778923506f450aabe14dc501939735e4e
   bcrypt.hash(request.body.password, 10, async (error, hash) => {
     if (error) response.status(500).json(error);
     else {
