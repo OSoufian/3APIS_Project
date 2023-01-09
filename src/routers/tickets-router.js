@@ -98,8 +98,6 @@ router.delete("/:id", isAdminOrCurrentUser, async (request, response) => {
         response.status(404).json({ message: "Ticket inexistant !" });
         return;
     }
-
-    console.log(request.params);
     response.status(200).json({ message: `L'utilisateur ${request.params.id} a bien été supprimé !`, });
 });
 

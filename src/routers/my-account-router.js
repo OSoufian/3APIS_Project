@@ -35,6 +35,7 @@ router.put("/", isCurrentUser, async (request, response) => {
       response.status(200).json(user);
     }
   });
+  
 });
 
 router.delete("/", isCurrentUser, async (request, response) => {
@@ -53,7 +54,7 @@ router.get("/tickets", isCurrentUser, async (request, response) => {
 
 router.get("/logout", isCurrentUser, async (request, response) => {
   request.session.destroy();
-  response.status(200).send("Vous avez été déconnecté avec succcès !");
+  response.status(200).send({message: "Vous avez été déconnecté avec succcès !" });
 });
 
 export default router;

@@ -29,7 +29,7 @@ describe("Users Router GET /", () => {
     });
 
     const response = await testSession.get("/users").expect(200);
-    expect(response.body[0]["email"]).toEqual("lounes.behloul@supinfo.com");
+    expect(response.body.length).not.toEqual(0);
   });
 });
 

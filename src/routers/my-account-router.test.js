@@ -55,7 +55,7 @@ describe("My account Router GET /", () => {
     testSession.userID = user.body.id;
     const response = await testSession.get("/my_account/logout").expect(200);
 
-    expect(response).toEqual("Vous avez été déconnecté avec succcès !");
+    expect(response.body).toEqual({message: "Vous avez été déconnecté avec succcès !" });
   });
 });
 

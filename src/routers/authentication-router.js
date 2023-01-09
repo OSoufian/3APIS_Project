@@ -1,11 +1,11 @@
 import express from "express";
 import { User } from "../mongo.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import session from "express-session";
+// import jwt from "jsonwebtoken";
+// import session from "express-session";
 
 const rounds = 10;
-const secretToken = 'lounes-soufian'
+// const secretToken = 'lounes-soufian'
 
 const router = express.Router();
 
