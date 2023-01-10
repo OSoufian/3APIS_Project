@@ -16,11 +16,7 @@ router.put("/", isCurrentUser, async (request, response) => {
   const user = await User.findOne({ email: request.body.email });
 
   if (user !== null && user.email !== request.session.userEmail) {
-    response
-      .status(409)
-      .json({
-        message: "Email déjà existant, veuillez utiliser une autre adresse !",
-      });
+    response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
     return;
   }
 
@@ -40,10 +36,7 @@ router.put("/", isCurrentUser, async (request, response) => {
 
 router.delete("/", isCurrentUser, async (request, response) => {
   await User.findByIdAndDelete(request.session.userID);
-
-  response.status(200).json({
-    message: `Votre compte a bien été supprimé !`,
-  });
+  response.status(200).json({ message: "Votre compte a bien été supprimé !" });
 });
 
 router.get("/tickets", isCurrentUser, async (request, response) => {
@@ -54,7 +47,7 @@ router.get("/tickets", isCurrentUser, async (request, response) => {
 
 router.get("/logout", isCurrentUser, async (request, response) => {
   request.session.destroy();
-  response.status(200).send({message: "Vous avez été déconnecté avec succcès !" });
+  response.status(200).json({message: "Vous avez été déconnecté avec succcès !" });
 });
 
 export default router;

@@ -1,11 +1,9 @@
 import express from "express";
-import { User } from "../mongo.js";
 import bcrypt from "bcrypt";
-// import jwt from "jsonwebtoken";
-// import session from "express-session";
+
+import { User } from "../mongo.js";
 
 const rounds = 10;
-// const secretToken = 'lounes-soufian'
 
 const router = express.Router();
 
@@ -13,7 +11,7 @@ router.post('/inscription', (request, response) => {
     bcrypt.hash(request.body.password, rounds, async (error, hash) => {
         if(error) response.status(500).json(error);
         else {
-            const newUser = User({...request.body, password: hash});
+            const newUser = User({ ...request.body, password: hash });
             const userEmail = await User.findOne({ email: newUser.email});
             if (userEmail !== null) {
                 response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
@@ -22,7 +20,7 @@ router.post('/inscription', (request, response) => {
             newUser.save()
             .then(
                 user => {
-                    response.status(200).json({message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`, id: user.id})
+                    response.status(200).json({ message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !` })
                 }
             )
             .catch(
@@ -33,10 +31,6 @@ router.post('/inscription', (request, response) => {
         }
     })
 });
-
-// function generateToken(user) {
-//     return jwt.sign({data: user}, secretToken, {expiresIn: '240h'})
-// }
 
 router.get("/login", (request, response) => {
     User.findOne({email : request.body.email})
@@ -50,8 +44,7 @@ router.get("/login", (request, response) => {
                         request.session.userEmail = user.email;
                         request.session.userRole = user.role;
                         request.session.userID = user._id;
-                        response.status(200).json({message: `Salut ${user.username}, tu as été connecté avec succès !`, 
-                        id: user._id})
+                        response.status(200).json({ message: `Salut ${user.username}, tu as été connecté avec succès !` })
                     }
                     else response.status(403).json({error: "Le mot de passe est incorrect !"});
                 })
@@ -61,7 +54,6 @@ router.get("/login", (request, response) => {
     .catch(error => {
         response.status(500).json(error)
     })
-
 })
 
 export default router;

@@ -10,7 +10,7 @@ export function isValidAdminOrEmployee() {
     if (isValidUser("admin", request.session.userRole) || isValidUser("employee", request.session.userRole))
       next();
     else 
-      response.status(401).send("Vous n'avez pas les autorisations nécessaires pour effectuer cette action !");
+      response.status(401).json({ message: "Vous n'avez pas les autorisations nécessaires pour effectuer cette action !" });
   };  
 }
 
@@ -19,7 +19,7 @@ export function isValidAdmin() {
     if (isValidUser("admin", request.session.userRole))
       next();
     else 
-      response.status(401).send("Vous n'avez pas les autorisations nécessaires pour effectuer cette action !");
+      response.status(401).json({ message: "Vous n'avez pas les autorisations nécessaires pour effectuer cette action !" });
   };  
 }
 
@@ -33,7 +33,7 @@ function isLogged(id) {
 export function getCurrentUser() {
   return (request, response, next) => {
     if (!isLogged(request.session.userID)) {
-      response.status(401).send("Aucun utilisateur connecté !");
+      response.status(401).json({ message: "Aucun utilisateur connecté !" });
       return;
     } else {
       next();
@@ -46,7 +46,7 @@ export function isValidAdminOrCurrentUser() {
     if (isValidUser("admin", request.session.userRole) || isLogged(request.session.userID))
       next();
     else 
-      response.status(401).send("Vous n'avez pas les autorisations nécessaires pour effectuer cette action !");
+      response.status(401).json({ message: "Vous n'avez pas les autorisations nécessaires pour effectuer cette action !" });
   }; 
 }
 

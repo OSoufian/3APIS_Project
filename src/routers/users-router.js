@@ -3,29 +3,23 @@ import bcrypt from "bcrypt";
 
 import { User } from "../mongo.js";
 import { isAdmin, isAdminOrEmployee } from "../middlewares/authentication-middleware.js";
+import { isValidID, userExists } from "../middlewares/params-middleware.js";
 
 const router = express.Router();
 
 router.get("/", isAdminOrEmployee, async (request, response) => {
   const users = await User.find();
-  // console.log(request.session);
   response.status(200).json(users);
 });
 
-router.get("/:id", isAdminOrEmployee, async (request, response) => {
-  const id = request.params.id;
-  const user = await User.findById(id);
-
-  if (!user) {
-    response.status(404).json({ message: "Utilisateur inexistant !" });
-    return;
-  }
-
+router.get("/:id", isAdminOrEmployee, isValidID, userExists, async (request, response) => {
+  const user = await User.findById(request.params.id);
   response.status(200).json(user);
 });
 
-router.put("/:id", isAdmin, async (request, response) => {
-  const user = await User.findById(request.params.id);
+router.put("/:id", isAdmin, isValidID, userExists, async (request, response) => {
+  const id = request.params.id;
+  const user = await User.findById(id);
   const newEmailUser = await User.findOne({ email: request.body.email});
 
   if (newEmailUser !== null && request.body.email !== user.email) {
@@ -37,7 +31,7 @@ router.put("/:id", isAdmin, async (request, response) => {
     if (error) response.status(500).json(error);
     else {
       const user = await User.findByIdAndUpdate(
-        request.params.id,
+        id,
         { ...request.body, password: hash },
         { new: true }
       );
@@ -45,21 +39,16 @@ router.put("/:id", isAdmin, async (request, response) => {
         response.status(404).json({ message: "Utilisateur inexistant !" });
         return;
       }
-      response.status(200).json(user);
+      response.status(200).json({ message:`L'utilisateur ${id} a été modifié avec succès !` , user});
     }
   });
 });
 
-router.delete("/:id", isAdmin, async (request, response) => {
+router.delete("/:id", isAdmin, isValidID, userExists, async (request, response) => {
   const id = request.params.id;
   const user = await User.findByIdAndDelete(id);
 
-  if (!user) {
-    response.status(404).json({ message: "Utilisateur inexistant !" });
-    return;
-  }
-
-  response.status(200).json({ message: `L'utilisateur ${request.params.id} a bien été supprimé !` });
+  response.status(200).json({ message: `L'utilisateur ${id} a été supprimé avec succès !`, user });
 });
 
 export default router;
