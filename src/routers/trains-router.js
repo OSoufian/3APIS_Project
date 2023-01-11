@@ -1,7 +1,8 @@
 import express from "express";
-import { Train } from "../mongo.js";
 
+import { Train } from "../mongo.js";
 import { isAdmin } from "../middlewares/authentication-middleware.js";
+import { isValidID, trainExists } from "../middlewares/params-middleware.js";
 
 const router = express.Router();
 
@@ -24,29 +25,17 @@ router.get("/", async (request, response) => {
     response.status(200).json(await trains);
 });
 
-router.put("/:id", isAdmin, async (request, response) => {
-    const id = request.params.id;
-    const train = await Train.findByIdAndUpdate(id, request.body, { new: true });
-  
-    if (!train) {
-      response.status(404).json({ message: "Train inexistant !" });
-      return;
-    }
+router.put("/:id", isAdmin, isValidID, trainExists, async (request, response) => {
+    const train = await Train.findByIdAndUpdate(request.params.id, request.body, { new: true });
   
     response.status(200).json(train);
 });
   
-router.delete("/:id", isAdmin, async (request, response) => {
+router.delete("/:id", isAdmin, isValidID, trainExists, async (request, response) => {
     const id = request.params.id;
-    const train = await Train.findByIdAndDelete(id);
+    await Train.findByIdAndDelete(id);
 
-    if (!train) {
-        response.status(404).json({ message: "Train inexistant !" });
-        return;
-    }
-
-    console.log(request.params);
-    response.status(200).json({ message: `L'utilisateur ${request.params.id} a bien été supprimé !`, });
+    response.status(200).json({ message: `Le train ${id} a bien été supprimé !`, });
 });
 
 export default router;

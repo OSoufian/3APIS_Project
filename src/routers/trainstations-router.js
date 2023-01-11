@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 import { Trainstation, Train } from "../mongo.js";
 import { isAdmin } from "../middlewares/authentication-middleware.js";
+import { isValidID, trainstationExists } from "../middlewares/params-middleware.js";
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.post("/", isAdmin, upload.single("image"), async (request, response) => {
             data: data,          
         },
     });
+
     newTrainstation.save();
     response.status(201).json(newTrainstation);
 });
@@ -54,13 +56,12 @@ router.get("/", async (request, response) => {
     response.status(200).json(await trainstations);
 });
 
-router.put("/:id", isAdmin, upload.single("image"), async (request, response) => {
-    const id = request.params.id;
+router.put("/:id", isAdmin, isValidID, trainstationExists, upload.single("image"), async (request, response) => {
     let ext;
     request.file ? ext = re.exec(request.file.originalname)[1] : null;
     let data;
-    request.file ? data = fs.readFileSync("uploads/" + request.file.filename) : data = null;
-    const trainstation = await Trainstation.findByIdAndUpdate(id,
+    request.file ? data = fs.readFileSync("uploads/original/" + request.file.filename) : data = null;
+    const trainstation = await Trainstation.findByIdAndUpdate(request.params.id,
         {
             name: request.body.name,
             open_hour: { hours: request.body.open_hours, minutes: request.body.open_minutes },
@@ -73,22 +74,11 @@ router.put("/:id", isAdmin, upload.single("image"), async (request, response) =>
         },         
         { new: true });
   
-    if (!trainstation) {
-      response.status(404).json({ message: "Gare inexistante !" });
-      return;
-    }
-  
     response.status(200).json(trainstation);
 });
   
-router.delete("/:id", isAdmin, async (request, response) => {
-    const id = request.params.id;
-    const trainstation = await Trainstation.findByIdAndDelete(id);
-
-    if (!trainstation) {
-        response.status(404).json({ message: "Gare inexistante !" });
-        return;
-    }
+router.delete("/:id", isAdmin, isValidID, trainstationExists, async (request, response) => {
+    const trainstation = await Trainstation.findByIdAndDelete(request.params.id);
 
     const start_trains = Train.find({ start_station: trainstation.name });
     const end_trains = Train.find({ end_station: trainstation.name });

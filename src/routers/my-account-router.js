@@ -7,8 +7,7 @@ import { isCurrentUser } from "../middlewares/authentication-middleware.js";
 const router = express.Router();
 
 router.get("/", isCurrentUser, async (request, response) => {
-  const id = request.session.userID;
-  const user = await User.findById(id);
+  const user = await User.findById(request.session.userID);
   response.status(200).json(user);
 });
 
@@ -40,8 +39,7 @@ router.delete("/", isCurrentUser, async (request, response) => {
 });
 
 router.get("/tickets", isCurrentUser, async (request, response) => {
-  const id = request.session.userID;
-  const tickets = await Ticket.find({ user : {user_id: id } });
+  const tickets = await Ticket.find({ user : {user_id: request.session.userID } });
   response.status(200).json(tickets);
 });
 
