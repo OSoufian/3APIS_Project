@@ -33,9 +33,33 @@ describe("Users Router GET /", () => {
   });
 });
 
+describe("Users Router GET /", () => {
+
+  let id;
+  beforeAll(async () => {
+    const user = await testSession.post("/api/auth/inscription").send({
+      email: "test3.user@gmail.com",
+      username: "tester3",
+      password: "test123",
+    });
+    id = user.body.id;
+  });
+
+  it("should get a user by id", async () => {
+    await testSession.get("/api/auth/login").send({
+      email: "lounes.behloul@supinfo.com",
+      password: "lounesBehloul",
+    });
+
+    const response = await testSession.get(`/users/${id}`).expect(200);
+    expect(response.body["username"]).toEqual("tester3");
+  });
+});
+
 describe("Users Router DELETE /", () => {
   let id;
   beforeAll(async () => {
+    await User.findOneAndDelete({ email: "test3.user@gmail.com" });
     const user = await testSession.post("/api/auth/inscription").send({
       email: "test3.user@gmail.com",
       username: "tester3",
@@ -83,6 +107,6 @@ describe("Users Router DELETE /", () => {
         })
         .expect(200);
   
-      expect(response.body).toMatchObject({ username: "tesmaa" });
+      expect(response.body.user).toMatchObject({ username: "tesmaa" });
     });
   });

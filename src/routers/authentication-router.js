@@ -20,7 +20,7 @@ router.post('/inscription', (request, response) => {
             newUser.save()
             .then(
                 user => {
-                    response.status(200).json({ message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !` })
+                    response.status(200).json({ message: `Bienvenue ${user.username}, ton compte a été créé avec succès. Tu peux te connecter !`, id: user._id })
                 }
             )
             .catch(
