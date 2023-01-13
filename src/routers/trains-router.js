@@ -2,7 +2,7 @@ import express from "express";
 
 import { Train } from "../mongo.js";
 import { isAdmin } from "../middlewares/authentication-middleware.js";
-import { isValidID, trainExists } from "../middlewares/params-middleware.js";
+import { isValidID, isValidSchema, trainExists } from "../middlewares/params-middleware.js";
 
 const router = express.Router();
 

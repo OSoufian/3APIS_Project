@@ -1,9 +1,6 @@
-import supertest from "supertest";
 import session from "supertest-session";
-import express from "express";
 import bcrypt from "bcrypt";
 
-import { User } from "../mongo.js";
 import app from "../server.js";
 
 let testSession = null;

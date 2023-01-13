@@ -1,7 +1,4 @@
-import supertest from "supertest";
 import session from "supertest-session";
-import bcrypt from "bcrypt";
-import express from "express";
 
 import { User } from "../mongo.js";
 import app from "../server.js";

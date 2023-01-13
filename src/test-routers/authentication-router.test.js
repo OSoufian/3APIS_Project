@@ -1,5 +1,4 @@
 import supertest from "supertest";
-import express from "express";
 
 import { User } from "../mongo.js";
 import app from "../server.js";

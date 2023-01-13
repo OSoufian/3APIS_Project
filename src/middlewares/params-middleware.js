@@ -60,8 +60,20 @@ export function isAnExistingTicket() {
         }
     };  
 };
+
+export function isValidYupSchema(schema) {
+    return async (req, res, next) => {
+        try {
+          await schema.validate(req.body);
+          next();
+        } catch (err) {
+          return res.status(500).json({ type: err.name, message: err.message });
+        }
+    };
+}
   
 export const isValidID = isValidIDParameters();
+export const isValidSchema = isValidYupSchema();
 export const userExists = isAnExistingUser();
 export const trainExists = isAnExistingTrain();
 export const trainstationExists = isAnExistingTrainstation();

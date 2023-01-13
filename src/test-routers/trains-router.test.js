@@ -1,5 +1,3 @@
-import supertest from "supertest";
-import express from "express";
 import session from "supertest-session";
 import { User } from "../mongo.js";
 

@@ -5,7 +5,7 @@ import sharp from "sharp";
 
 import { Trainstation, Train } from "../mongo.js";
 import { isAdmin } from "../middlewares/authentication-middleware.js";
-import { isValidID, trainstationExists } from "../middlewares/params-middleware.js";
+import { isValidID, isValidSchema, trainstationExists } from "../middlewares/params-middleware.js";
 
 const router = express.Router();
 
