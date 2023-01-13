@@ -39,7 +39,7 @@ router.delete("/", isCurrentUser, async (request, response) => {
 });
 
 router.get("/tickets", isCurrentUser, async (request, response) => {
-  const tickets = await Ticket.find({ user : {user_id: request.session.userID } });
+  const tickets = await Ticket.find({"user._id": request.session.userID });
   response.status(200).json(tickets);
 });
 
